@@ -6,7 +6,7 @@ import { uploadCloudinary } from "../utils/cloudinary.js";
 
 const addBlog = asyncHandler(async (req, res) => {
   const { author, category, title } = req.body;
-
+  console.log(author, category, title);
   if ([author, category, title].some((fields) => fields === "" || undefined)) {
     throw new ApiError(401, "All fields are required");
   }
@@ -19,7 +19,6 @@ const addBlog = asyncHandler(async (req, res) => {
   if (req.file) {
     thumbnailLocalPath = req.file?.path;
   }
-  console.log(thumbnailLocalPath);
   if (!thumbnailLocalPath) {
     throw new ApiError(401, "Invalid thumbnail image");
   }
@@ -155,6 +154,25 @@ const getDraftBlog = asyncHandler(async (req, res) => {
     .json(new ApiResponse(201, draftBlog, "get draft data successfully"));
 });
 
+const getTrendingBlogs = asyncHandler(async (req, res) => {
+  const trendingBlogs = await BLOG.aggregate([
+    {
+      $sort: {
+        views: -1,
+      },
+    },
+  ]);
+
+  if (!trendingBlogs) {
+    throw new ApiError(500, "some thing while getting trending data try again");
+  }
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(201, trendingBlogs, "get trending data successfully")
+    );
+});
 export {
   addBlog,
   updateBlog,
@@ -163,4 +181,5 @@ export {
   getBlogByCotegory,
   getPublishBlog,
   getDraftBlog,
+  getTrendingBlogs,
 };
