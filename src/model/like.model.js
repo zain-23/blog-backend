@@ -16,6 +16,7 @@ const likeSchema = new Schema(
     },
     blog: {
       type: Schema.Types.ObjectId,
+      ref: "Blog",
     },
   },
   {
