@@ -1,9 +1,9 @@
-import { COMMENT } from "../model/comment.model.js";
+import { REPLY } from "../model/reply.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
-const doComment = asyncHandler(async (req, res) => {
+const doReply = asyncHandler(async (req, res) => {
   const { content, email, avatar, name } = req.body;
   const { id } = req.params;
 
@@ -13,19 +13,19 @@ const doComment = asyncHandler(async (req, res) => {
     throw new ApiError(401, "invalid fields");
   }
 
-  const comment = await COMMENT.create({
+  const reply = await REPLY.create({
     content,
     email,
     avatar,
     name,
-    blog: id,
+    comment: id,
   });
 
-  if (!comment) {
-    throw new ApiError(500, "something went wrong while add comment");
+  if (!reply) {
+    throw new ApiError(500, "something went wrong while add reply");
   }
 
-  return res.status(200).json(new ApiResponse(201, "Add comment successfully"));
+  return res.status(200).json(new ApiResponse(201, "Add reply successfully"));
 });
 
-export { doComment };
+export { doReply };

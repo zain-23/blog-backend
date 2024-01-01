@@ -1,6 +1,7 @@
 import express from "express";
 import blogRoutes from "./routes/blog.route.js";
 import commentRoutes from "./routes/comment.route.js";
+import replyRoutes from "./routes/reply.route.js";
 
 import cors from "cors";
 const app = express();
@@ -21,4 +22,6 @@ app.get("/", function (req, res) {
 
 app.use("/api/v1/blog", blogRoutes);
 app.use("/api/v2/comment", commentRoutes);
+app.use("/api/v2/reply", replyRoutes);
+
 export { app };
