@@ -48,9 +48,11 @@ const getComments = asyncHandler(async (req, res) => {
   ]);
 
   if (!comment) {
-    throw new ApiError(401, "something went wrong");
+    throw new ApiError(401, "something went wrong getting comments");
   }
 
-  return res.status(200).json(new ApiResponse(201, comment, "get comments successfully"));
+  return res
+    .status(200)
+    .json(new ApiResponse(201, comment, "get comments successfully"));
 });
 export { doComment, getComments };
