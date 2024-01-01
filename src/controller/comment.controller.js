@@ -4,10 +4,6 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 
 const doComment = asyncHandler(async (req, res) => {
-  // get comment data from front-end.
-  // check not empty.
-  // create an object and entry in db
-
   const { content, email, avatar, name } = req.body;
   const { id } = req.params;
 
@@ -28,6 +24,8 @@ const doComment = asyncHandler(async (req, res) => {
   if (!comment) {
     throw new ApiError(500, "something went wrong while add comment");
   }
-
-  return res.status(200).json(new ApiResponse(201,"Add comment successfully"))
+  
+  return res.status(200).json(new ApiResponse(201, "Add comment successfully"));
 });
+
+export { doComment };
