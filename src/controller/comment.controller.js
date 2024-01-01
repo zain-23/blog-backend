@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { COMMENT } from "../model/comment.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -28,4 +29,28 @@ const doComment = asyncHandler(async (req, res) => {
   return res.status(200).json(new ApiResponse(201, "Add comment successfully"));
 });
 
-export { doComment };
+const getComments = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const comment = await COMMENT.aggregate([
+    {
+      $match: {
+        blog: new mongoose.Types.ObjectId(id),
+      },
+    },
+    {
+      $lookup: {
+        from: "replies",
+        localField: "_id",
+        foreignField: "comment",
+        as: "reply",
+      },
+    },
+  ]);
+
+  if (!comment) {
+    throw new ApiError(401, "something went wrong");
+  }
+
+  return res.status(200).json(new ApiResponse(201, comment, "get comments successfully"));
+});
+export { doComment, getComments };
