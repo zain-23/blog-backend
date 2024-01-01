@@ -170,7 +170,7 @@ const getTrendingBlogs = asyncHandler(async (req, res) => {
   return res
     .status(200)
     .json(
-      new ApiResponse(201, trendingBlogs, "get trending data successfully")
+      new ApiResponse(201, "get trending data successfully", trendingBlogs)
     );
 });
 export {
