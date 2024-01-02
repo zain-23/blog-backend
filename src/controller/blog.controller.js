@@ -89,7 +89,13 @@ const deleteBlog = asyncHandler(async (req, res) => {
 });
 
 const getAllBlog = asyncHandler(async (req, res) => {
-  const allBlogs = await BLOG.find();
+  const allBlogs = await BLOG.aggregate([
+    {
+      $match: {
+        isPublished: true,
+      },
+    },
+  ]);
 
   if (allBlogs.length === 0) {
     throw new ApiError(401, "no blogs");
@@ -97,7 +103,7 @@ const getAllBlog = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(201, allBlogs, "Get Blogs successfully"));
+    .json(new ApiResponse(201, "Get Blogs successfully", allBlogs));
 });
 
 const getBlogByCotegory = asyncHandler(async (req, res) => {
