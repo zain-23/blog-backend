@@ -76,7 +76,7 @@ const updateBlog = asyncHandler(async (req, res) => {
 
 const deleteBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  console.log("id", id);
+  
   if (!id) {
     throw new ApiError(401, "invalid blog id");
   }
@@ -121,7 +121,6 @@ const getBlogByCotegory = asyncHandler(async (req, res) => {
     },
   ]);
 
-  console.log("blogs", blogs);
 });
 
 const getPublishBlog = asyncHandler(async (req, res) => {
