@@ -7,6 +7,7 @@ import { uploadCloudinary } from "../utils/cloudinary.js";
 const addBlog = asyncHandler(async (req, res) => {
   const { author, category, title } = req.body;
   console.log(author, category, title);
+
   if ([author, category, title].some((fields) => fields === "" || undefined)) {
     throw new ApiError(401, "All fields are required");
   }
@@ -14,7 +15,7 @@ const addBlog = asyncHandler(async (req, res) => {
   if (author !== "Admin") {
     throw new ApiError(401, "author name must be Admin");
   }
-
+  console.log(req.file);
   let thumbnailLocalPath;
   if (req.file) {
     thumbnailLocalPath = req.file?.path;
@@ -76,7 +77,7 @@ const updateBlog = asyncHandler(async (req, res) => {
 
 const deleteBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  
+
   if (!id) {
     throw new ApiError(401, "invalid blog id");
   }
@@ -89,13 +90,7 @@ const deleteBlog = asyncHandler(async (req, res) => {
 });
 
 const getAllBlog = asyncHandler(async (req, res) => {
-  const allBlogs = await BLOG.aggregate([
-    {
-      $match: {
-        isPublished: true,
-      },
-    },
-  ]);
+  const allBlogs = await BLOG.find();
 
   if (allBlogs.length === 0) {
     throw new ApiError(401, "no blogs");
@@ -120,7 +115,6 @@ const getBlogByCotegory = asyncHandler(async (req, res) => {
       },
     },
   ]);
-
 });
 
 const getPublishBlog = asyncHandler(async (req, res) => {
