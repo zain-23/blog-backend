@@ -48,17 +48,18 @@ const addBlog = asyncHandler(async (req, res) => {
 });
 
 const updateBlog = asyncHandler(async (req, res) => {
-  const { content } = req.body;
+  const { editorState } = req.body;
   const { id } = req.params;
   console.log(req.body, id);
 
-  if (!content) return null;
+  if (!editorState) return null;
 
   const updatedBlog = await BLOG.findByIdAndUpdate(
     id,
     {
       $set: {
-        content,
+        content: editorState,
+        isPublished: true,
       },
     },
     {
@@ -70,7 +71,7 @@ const updateBlog = asyncHandler(async (req, res) => {
     throw new ApiError(500, "Can't updated the blog try again later");
   }
 
-  return res.status(200, updatedBlog, "Blog updated successfully");
+  return res.status(200, "Blog updated successfully", updatedBlog);
 });
 
 const deleteBlog = asyncHandler(async (req, res) => {
@@ -170,6 +171,16 @@ const getTrendingBlogs = asyncHandler(async (req, res) => {
       new ApiResponse(201, "get trending data successfully", trendingBlogs)
     );
 });
+
+const getSingleBlog = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  const blog = await BLOG.findById(id);
+
+  return res
+    .status(200)
+    .json(new ApiResponse(201, "get blog successfullt", blog));
+});
 export {
   addBlog,
   updateBlog,
@@ -179,4 +190,5 @@ export {
   getPublishBlog,
   getDraftBlog,
   getTrendingBlogs,
+  getSingleBlog,
 };
