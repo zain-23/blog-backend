@@ -6,7 +6,6 @@ import { uploadCloudinary } from "../utils/cloudinary.js";
 
 const addBlog = asyncHandler(async (req, res) => {
   const { author, category, title } = req.body;
-  console.log(author, category, title);
 
   if ([author, category, title].some((fields) => fields === "" || undefined)) {
     throw new ApiError(401, "All fields are required");
@@ -15,7 +14,6 @@ const addBlog = asyncHandler(async (req, res) => {
   if (author !== "Admin") {
     throw new ApiError(401, "author name must be Admin");
   }
-  console.log(req.file);
   let thumbnailLocalPath;
   if (req.file) {
     thumbnailLocalPath = req.file?.path;
@@ -46,7 +44,7 @@ const addBlog = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(201, savedBlog, "blog created successfullt"));
+    .json(new ApiResponse(201, "blog created successfullt", savedBlog));
 });
 
 const updateBlog = asyncHandler(async (req, res) => {
