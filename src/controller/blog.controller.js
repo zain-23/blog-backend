@@ -50,7 +50,6 @@ const addBlog = asyncHandler(async (req, res) => {
 const updateBlog = asyncHandler(async (req, res) => {
   const { editorState } = req.body;
   const { id } = req.params;
-  console.log(req.body, id);
 
   if (!editorState) return null;
 
@@ -66,12 +65,13 @@ const updateBlog = asyncHandler(async (req, res) => {
       new: true,
     }
   );
-
   if (!updatedBlog) {
     throw new ApiError(500, "Can't updated the blog try again later");
   }
 
-  return res.status(200, "Blog updated successfully", updatedBlog);
+  return res
+    .status(200)
+    .json(new ApiResponse(201, "Blog updated successfully", updatedBlog));
 });
 
 const deleteBlog = asyncHandler(async (req, res) => {
