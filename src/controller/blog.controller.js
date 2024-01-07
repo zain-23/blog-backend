@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { BLOG } from "../model/blog.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -174,12 +175,24 @@ const getTrendingBlogs = asyncHandler(async (req, res) => {
 
 const getSingleBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
-
-  const blog = await BLOG.findById(id);
-
+  const blog = await BLOG.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(id),
+      },
+    },
+    {
+      $lookup: {
+        from: "comments",
+        foreignField: "blog",
+        localField: "_id",
+        as: "comments",
+      },
+    },
+  ]);
   return res
     .status(200)
-    .json(new ApiResponse(201, "get blog successfullt", blog));
+    .json(new ApiResponse(201, "get single blog successfullt", blog[0]));
 });
 export {
   addBlog,
