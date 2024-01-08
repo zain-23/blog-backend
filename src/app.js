@@ -7,10 +7,11 @@ import cors from "cors";
 const app = express();
 
 app.use(
-  cors({
-    credentials: true,
-    origin: process.env.CORS_ORIGIN,
-  })
+  // cors({
+  //   credentials: true,
+  //   origin: process.env.CORS_ORIGIN,
+  // })
+  cors()
 );
 app.use(express.json({ limit: "10kb" }));
 app.use(express.urlencoded({ extended: true, limit: "10kb" }));
