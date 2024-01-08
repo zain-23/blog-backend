@@ -5,6 +5,7 @@ import {
   getAllBlog,
   getBlogByCotegory,
   getDraftBlog,
+  getSingleBlog,
   getTrendingBlogs,
   updateBlog,
 } from "../controller/blog.controller.js";
@@ -19,5 +20,6 @@ router.route("/get-blogs").get(getAllBlog);
 router.route("/get-draftblogs").get(getDraftBlog);
 router.route("/get-blogs/:category").get(getBlogByCotegory);
 router.route("/get-trending-blogs").get(getTrendingBlogs);
+router.route("/get-single-blog/:id").get(getSingleBlog);
 
 export default router;

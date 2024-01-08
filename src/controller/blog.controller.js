@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { BLOG } from "../model/blog.model.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
@@ -6,7 +7,7 @@ import { uploadCloudinary } from "../utils/cloudinary.js";
 
 const addBlog = asyncHandler(async (req, res) => {
   const { author, category, title } = req.body;
-  console.log(author, category, title);
+
   if ([author, category, title].some((fields) => fields === "" || undefined)) {
     throw new ApiError(401, "All fields are required");
   }
@@ -14,7 +15,6 @@ const addBlog = asyncHandler(async (req, res) => {
   if (author !== "Admin") {
     throw new ApiError(401, "author name must be Admin");
   }
-
   let thumbnailLocalPath;
   if (req.file) {
     thumbnailLocalPath = req.file?.path;
@@ -45,38 +45,39 @@ const addBlog = asyncHandler(async (req, res) => {
 
   return res
     .status(200)
-    .json(new ApiResponse(201, savedBlog, "blog created successfullt"));
+    .json(new ApiResponse(201, "blog created successfullt", savedBlog));
 });
 
 const updateBlog = asyncHandler(async (req, res) => {
-  const { content } = req.body;
+  const { editorState } = req.body;
   const { id } = req.params;
-  console.log(req.body, id);
 
-  if (!content) return null;
+  if (!editorState) return null;
 
   const updatedBlog = await BLOG.findByIdAndUpdate(
     id,
     {
       $set: {
-        content,
+        content: editorState,
+        isPublished: true,
       },
     },
     {
       new: true,
     }
   );
-
   if (!updatedBlog) {
     throw new ApiError(500, "Can't updated the blog try again later");
   }
 
-  return res.status(200, updatedBlog, "Blog updated successfully");
+  return res
+    .status(200)
+    .json(new ApiResponse(201, "Blog updated successfully", updatedBlog));
 });
 
 const deleteBlog = asyncHandler(async (req, res) => {
   const { id } = req.params;
-  
+
   if (!id) {
     throw new ApiError(401, "invalid blog id");
   }
@@ -89,13 +90,7 @@ const deleteBlog = asyncHandler(async (req, res) => {
 });
 
 const getAllBlog = asyncHandler(async (req, res) => {
-  const allBlogs = await BLOG.aggregate([
-    {
-      $match: {
-        isPublished: true,
-      },
-    },
-  ]);
+  const allBlogs = await BLOG.find();
 
   if (allBlogs.length === 0) {
     throw new ApiError(401, "no blogs");
@@ -120,7 +115,6 @@ const getBlogByCotegory = asyncHandler(async (req, res) => {
       },
     },
   ]);
-
 });
 
 const getPublishBlog = asyncHandler(async (req, res) => {
@@ -178,6 +172,28 @@ const getTrendingBlogs = asyncHandler(async (req, res) => {
       new ApiResponse(201, "get trending data successfully", trendingBlogs)
     );
 });
+
+const getSingleBlog = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+  const blog = await BLOG.aggregate([
+    {
+      $match: {
+        _id: new mongoose.Types.ObjectId(id),
+      },
+    },
+    {
+      $lookup: {
+        from: "comments",
+        foreignField: "blog",
+        localField: "_id",
+        as: "comments",
+      },
+    },
+  ]);
+  return res
+    .status(200)
+    .json(new ApiResponse(201, "get single blog successfullt", blog[0]));
+});
 export {
   addBlog,
   updateBlog,
@@ -187,4 +203,5 @@ export {
   getPublishBlog,
   getDraftBlog,
   getTrendingBlogs,
+  getSingleBlog,
 };
